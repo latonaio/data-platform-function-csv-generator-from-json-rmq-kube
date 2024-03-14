@@ -1,0 +1,95 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    run: data-platform-function-csv-generator-from-json-rmq-kube
+  name: data-platform-function-csv-generator-from-json-rmq-kube
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      run: data-platform-function-csv-generator-from-json-rmq-kube
+      app: FUNC_CSV_GENERATOR_FROM_JSON
+  template:
+    metadata:
+      labels:
+        run: data-platform-function-csv-generator-from-json-rmq-kube
+        app: FUNC_CSV_GENERATOR_FROM_JSON
+    spec:
+      hostname: data-platform-function-csv-generator-from-json-rmq-kube
+      containers:
+        - name: data-platform-function-csv-generator-from-json-rmq-kube
+          image: latonaio/data-platform-function-csv-generator-from-json-rmq-kube
+          imagePullPolicy: Always
+          env:
+            - name: TZ
+              value: Asia/Tokyo
+            - name: RMQ_QUEUE_FROM
+              value: "data-platform-function-csv-generator-from-json-queue"
+            - name: RMQ_QUEUE_TO_SQL
+              value: "sql-update-kube"
+            - name: RMQ_SESSION_CONTROL_QUEUE
+              value: "data-platform-function-csv-generator-from-json-session-control-queue"
+            - name: MOUNT_PATH
+              value: "/function-csv-generator-from-json"
+          envFrom:
+            - configMapRef:
+                name: env-config
+            - secretRef:
+                name: env-secret
+          volumeMounts:
+            - name: doc-storage
+              mountPath: /function-csv-generator-from-json
+      volumes:
+        - name: doc-persistent-storage
+          persistentVolumeClaim:
+            claimName: data-platform-function-csv-generator-from-json-rmq-kube-pv-claim
+        - name: doc-storage
+          hostPath:
+            path: /mnt/data-platform-function-csv-generator-from-json-rmq-kube/function-csv-generator-from-json
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: data-platform-function-csv-generator-from-json-rmq-kube-pv-claim
+  namespace: default
+spec:
+  storageClassName: data-platform-function-csv-generator-from-json-rmq-kube
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: data-platform-function-csv-generator-from-json-rmq-kube-pv-volume
+  labels:
+    type: local
+  namespace: default
+spec:
+  storageClassName: data-platform-function-csv-generator-from-json-rmq-kube
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: /mnt/data-platform-function-csv-generator-from-json-rmq-kube
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    run: data-platform-function-csv-generator-from-json-rmq-kube
+  name: data-platform-function-csv-generator-from-json-rmq-kube
+spec:
+  selector:
+    run: data-platform-function-csv-generator-from-json-rmq-kube
+  type: NodePort
+  ports:
+    - name: data-platform-function-csv-generator-from-json-rmq-kube
+      port: 3000
+      protocol: TCP
+      nodePort: 30701

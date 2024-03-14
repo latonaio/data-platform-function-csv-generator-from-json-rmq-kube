@@ -1,0 +1,24 @@
+{
+  "connection_key": "request",
+  "result": true,
+  "redis_key": "abcdefg",
+  "filepath": "/var/lib/aion/Data/rededge_sdc/abcdef.json",
+  "api_status_code": 200,
+  "runtime_session_id": "boi9ar543dg91ipdnspi099u231280ab0v8af0ew",
+  "business_partner": 201,
+  "service_label": "FUNC_CSV_GENERATOR_FROM_JSON",
+  "api_type": "creates",
+  "message": {
+    "Header": null,
+    "Records": "[{\"DeliveryDocument\":1,\"DeliveryDocumentItem\":1,\"Product\":\"SM570TMC-001\"}]"
+  },
+  "api_schema": "DPFMFuncCsvGeneratorFromJson",
+  "accepter": [
+    "CSV"
+  ],
+  "deleted": false,
+  "api_processing_result": true,
+  "api_processing_error": "",
+  "delivery_instruction_pdf": "",
+  "mount_path": "volume/qw58yL3KQi/output.csv"
+}
